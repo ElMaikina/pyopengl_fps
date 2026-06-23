@@ -157,7 +157,7 @@ class Player:
             game_map
         ):
             self.y = new_y
-
+# colisiones
 def collide_circle(px, py, radius, game_map):
     min_x = int(px - radius)
     max_x = int(px + radius)
