@@ -14,15 +14,15 @@ MAP_FILE = "mapa.csv"
 BLOCK_SIZE = 1.0
 PLAYER_RADIUS = 0.25
 
-ACCELERATION = 12.0
-DECELERATION = 10.0
+ACCELERATION = 15.0
+DECELERATION = 15.0
 MAX_SPEED = 4.0
 
 MOUSE_SENSITIVITY = 0.12
 
 PLAYER_HEIGHT = 0.4
 
-class MapData:
+class Level:
     def __init__(self):
         self.grid = []
         self.width = 0
@@ -74,6 +74,8 @@ class Player:
         self.yaw = 0.0
         self.pitch = 0.0
         self.h = PLAYER_HEIGHT
+        self.forward_speed = 0.0
+        self.strafe_speed = 0.0
 
     def forward_vector(self):
         r = math.radians(self.yaw)
@@ -90,37 +92,52 @@ class Player:
         ], dtype=np.float32)
 
     def update(self, dt, keys, game_map):
-        movement = np.array([0.0, 0.0], dtype=np.float32)
         if keys[K_w]:
-            movement -= self.forward_vector()
-        if keys[K_s]:
-            movement += self.forward_vector()
-        if keys[K_d]:
-            movement += self.right_vector()
-        if keys[K_a]:
-            movement -= self.right_vector()
-        length = np.linalg.norm(movement)
-        if length > 0:
-            movement /= length
-            self.vx += movement[0] * ACCELERATION * dt
-            self.vy += movement[1] * ACCELERATION * dt
+            self.forward_speed -= ACCELERATION * dt
+        elif keys[K_s]:
+            self.forward_speed += ACCELERATION * dt
         else:
-            speed = math.hypot(self.vx, self.vy)
-            if speed > 0:
-                decel = DECELERATION * dt
-                speed = max(0.0, speed - decel)
-                if speed == 0:
-                    self.vx = 0
-                    self.vy = 0
-                else:
-                    factor = speed / math.hypot(self.vx, self.vy)
-                    self.vx *= factor
-                    self.vy *= factor
-        speed = math.hypot(self.vx, self.vy)
+            if self.forward_speed > 0:
+                self.forward_speed = max(
+                    0,
+                    self.forward_speed - DECELERATION * dt
+                )
+            elif self.forward_speed < 0:
+                self.forward_speed = min(
+                    0,
+                    self.forward_speed + DECELERATION * dt
+                )
+        if keys[K_d]:
+            self.strafe_speed += ACCELERATION * dt
+        elif keys[K_a]:
+            self.strafe_speed -= ACCELERATION * dt
+        else:
+            if self.strafe_speed > 0:
+                self.strafe_speed = max(
+                    0,
+                    self.strafe_speed - DECELERATION * dt
+                )
+            elif self.strafe_speed < 0:
+                self.strafe_speed = min(
+                    0,
+                    self.strafe_speed + DECELERATION * dt
+                )
+        speed = math.hypot(
+            self.forward_speed,
+            self.strafe_speed
+        )
         if speed > MAX_SPEED:
             factor = MAX_SPEED / speed
-            self.vx *= factor
-            self.vy *= factor
+            self.forward_speed *= factor
+            self.strafe_speed *= factor
+        forward = self.forward_vector()
+        right = self.right_vector()
+        velocity = (
+            forward * self.forward_speed +
+            right * self.strafe_speed
+        )
+        self.vx = velocity[0]
+        self.vy = velocity[1]
         self.move_with_collision(dt, game_map)
 
     def move_with_collision(self, dt, game_map):
@@ -253,7 +270,7 @@ def main():
     )
     glMatrixMode(GL_MODELVIEW)
     glEnable(GL_DEPTH_TEST)
-    game_map = MapData()
+    game_map = Level()
     game_map.load(MAP_FILE)
 
     player = Player(
@@ -277,8 +294,8 @@ def main():
                 player.yaw -= dx * MOUSE_SENSITIVITY
                 player.pitch += dy * MOUSE_SENSITIVITY
                 player.pitch = max(
-                    -120,
-                    min(120, player.pitch)
+                    -90,
+                    min(90, player.pitch)
                 )
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
