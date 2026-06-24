@@ -63,17 +63,49 @@ def draw_enemy(enemy):
     if not enemy.alive:
         return
 
-    glColor3f(0.8, 0.0, 0.8)
-
     glPushMatrix()
-    glTranslatef(enemy.x, 0.25, enemy.y)
+    glTranslatef(enemy.x, 0.35, enemy.y)
+    glScalef(0.5, 0.7, 0.5)
 
     glBegin(GL_QUADS)
 
-    glVertex3f(-0.2, -0.2, 0.0)
-    glVertex3f(0.2, -0.2, 0.0)
-    glVertex3f(0.2, 0.2, 0.0)
-    glVertex3f(-0.2, 0.2, 0.0)
+    glColor3f(1.0, 0.0, 0.0)
+
+    # FRONT
+    glVertex3f(-0.5, -0.5, 0.5)
+    glVertex3f(0.5, -0.5, 0.5)
+    glVertex3f(0.5, 0.5, 0.5)
+    glVertex3f(-0.5, 0.5, 0.5)
+
+    # BACK
+    glVertex3f(-0.5, -0.5, -0.5)
+    glVertex3f(-0.5, 0.5, -0.5)
+    glVertex3f(0.5, 0.5, -0.5)
+    glVertex3f(0.5, -0.5, -0.5)
+
+    # LEFT
+    glVertex3f(-0.5, -0.5, -0.5)
+    glVertex3f(-0.5, -0.5, 0.5)
+    glVertex3f(-0.5, 0.5, 0.5)
+    glVertex3f(-0.5, 0.5, -0.5)
+
+    # RIGHT
+    glVertex3f(0.5, -0.5, -0.5)
+    glVertex3f(0.5, 0.5, -0.5)
+    glVertex3f(0.5, 0.5, 0.5)
+    glVertex3f(0.5, -0.5, 0.5)
+
+    # TOP
+    glVertex3f(-0.5, 0.5, -0.5)
+    glVertex3f(-0.5, 0.5, 0.5)
+    glVertex3f(0.5, 0.5, 0.5)
+    glVertex3f(0.5, 0.5, -0.5)
+
+    # BOTTOM
+    glVertex3f(-0.5, -0.5, -0.5)
+    glVertex3f(0.5, -0.5, -0.5)
+    glVertex3f(0.5, -0.5, 0.5)
+    glVertex3f(-0.5, -0.5, 0.5)
 
     glEnd()
 

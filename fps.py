@@ -7,6 +7,7 @@ from OpenGL.GLU import *
 
 from level import Level
 from player import Player
+from enemigo import Enemy
 from renderer import render
 
 MAP_FILE = "mapa.csv"
@@ -47,7 +48,12 @@ def main():
         game_map.player_spawn[1]
     )
 
-    enemies = []
+    enemies = [
+    Enemy(5.5, 1.5),
+    Enemy(6.5, 2.5),
+    Enemy(1.5, 3.5)
+]
+
     items = []
     particles = []
 
@@ -88,6 +94,13 @@ def main():
             keys,
             game_map
         )
+
+        for enemy in enemies:
+            enemy.update(
+                player,
+                game_map,
+                dt
+            )
 
         render(
             game_map,
