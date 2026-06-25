@@ -1,5 +1,5 @@
 import csv
-
+import random
 
 class Level:
     def __init__(self):
@@ -38,6 +38,40 @@ class Level:
 
         if last_player is not None:
             self.player_spawn = last_player
+
+
+    def generate(self, width=50, height=50, wall_probability=0.15):
+        self.width = width
+        self.height = height
+        self.grid = []
+
+        for y in range(height):
+
+            row = []
+
+            for x in range(width):
+
+                # Bordes
+                if (x == 0 or y == 0 or x == width - 1 or y == height - 1):
+                    row.append(1)
+
+                # Paredes internas
+                elif random.random() < wall_probability:
+                    row.append(1)
+
+                else:
+                    row.append(0)
+
+            self.grid.append(row)
+
+        # Posición inicial del jugador
+        self.player_spawn = (1.5, 1.5)
+
+        # Zona despejada alrededor del jugador
+        self.grid[1][1] = 0
+        self.grid[1][2] = 0
+        self.grid[2][1] = 0
+        self.grid[2][2] = 0
 
     def is_wall(self, x, y):
         gx = int(x)
